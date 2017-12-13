@@ -125,6 +125,11 @@ class How_Goes_It {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-how-goes-it-shortcodes.php';
 
+		/**
+		 * The class responsible for managing user actions like login, logout and registration.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-how-goes-it-user-actions.php';
+
 		$this->loader = new How_Goes_It_Loader();
 	}
 
@@ -176,6 +181,17 @@ class How_Goes_It {
 		$plugin_shortcodes = new How_Goes_It_Public_Shortcodes( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'init', $plugin_shortcodes, 'init_shortcodes' );
+
+		$plugin_user_actions = new How_Goes_It_Public_User_Actions( $this->get_plugin_name(), $this->get_version() );
+
+		$this->loader->add_action( 'login_redirect', $plugin_user_actions, 'cs_redirect_from_wp_login' );
+		$this->loader->add_action( 'login_redirect', $plugin_user_actions, 'redirect_after_login', 10, 3 );
+		$this->loader->add_action( 'wp_logout', $plugin_user_actions, 'cs_logout_redirect' );
+		$this->loader->add_action( 'init', $plugin_user_actions, 'cs_disable_admin_bar' );
+		$this->loader->add_action( 'login_form_register', $plugin_user_actions, 'cs_do_register_user' );
+		$this->loader->add_action( 'login_form_register', $plugin_user_actions, 'cs_redirect_from_wp_register' );
+
+		$this->loader->add_filter( 'authenticate', $plugin_user_actions, 'cs_maybe_redirect_at_authentication', 101, 3 );
 	}
 
 	/**
