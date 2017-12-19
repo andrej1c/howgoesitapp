@@ -22,9 +22,7 @@
 class How_Goes_It_Public_User_Actions extends How_Goes_It_Public {
 
 	public function __construct( $plugin_name, $version ) {
-
-		$this->plugin_name	 = $plugin_name;
-		$this->version		 = $version;
+		parent::__construct( $plugin_name, $version );
 	}
 
 	function cs_redirect_from_wp_login() {
@@ -72,7 +70,7 @@ class How_Goes_It_Public_User_Actions extends How_Goes_It_Public {
 		return $user;
 	}
 
-	function do_register_user() {
+	function cs_do_register_user() {
 		if ( 'POST' === filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING ) ) {
 			$registration_url = home_url( '/register/' );
 

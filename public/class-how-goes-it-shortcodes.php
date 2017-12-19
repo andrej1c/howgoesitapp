@@ -23,8 +23,7 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 
 	public function __construct( $plugin_name, $version ) {
 
-		$this->plugin_name	 = $plugin_name;
-		$this->version		 = $version;
+		parent::__construct( $plugin_name, $version );
 	}
 
 	public function init_shortcodes() {
@@ -102,38 +101,65 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 		if ( ! get_option( 'users_can_register' ) ) {
 			return __( 'Registration is currently closed.', 'wpskilltestplugin' );
 		} else {
-
+			$content = '';
 			if ( filter_input( INPUT_GET, 'error' ) ) {
-				$errors = explode( ',', filter_input( INPUT_GET, 'error' ) );
+				$error = filter_input( INPUT_GET, 'error' );
 
-				foreach ( $errors as $error ) {
-					echo '<p>';
-					echo '<strong>Error:</strong> ' . esc_html( $this->error_message( $error ) );
-					echo '</p>';
-				}
+				$content .= '<p>';
+				$content .= '<strong>Error:</strong> ' . esc_html( $error );
+				$content .= '</p>';
 			}
 
 			do_action( 'wordpress_social_login' );
 
-			echo $this->cs_render_form_html(); // xss OK.
+			$content .= $this->cs_render_form_html(); // xss OK.
+			return $content;
 		}
 	}
 
 	function cs_render_form_html() {
+		$tzlist	 = DateTimeZone::listIdentifiers( DateTimeZone::ALL );
+		$tz_a	 = [];
+		foreach ( $tzlist as $tz ) {
+			$tz_name	 = str_replace( '/', ' - ', $tz );
+			$tz_name	 = str_replace( '_', ' ', $tz_name );
+			$tz_a[$tz]	 = $tz_name;
+		}
 		$output = '';
 
-		$output	 .= '<form name="registrationform" id="loginform" action="' . wp_registration_url() . '" method="post">';
+		$output	 .= '<form name="registrationform" id="loginform" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" method="post">';
+		$output	 .= wp_nonce_field( 'hgi_registration', 'hgi_nonce_field', true, false );
+		$output	 .= '<input type="hidden" name="action" value="hgi_create_user">';
+		// TODO: Add check for HGI Code and set it to hidden field.
 		$output	 .= '<p>';
-		$output	 .= '<label for="hgia_user">Username</label>';
-		$output	 .= '<input type="text" name="hgia_user" id="hgia_user" class="input" size="20" autocomplete="off" />';
+		$output	 .= '<label for="hgia_first_name">First Name</label>';
+		$output	 .= sprintf( '<input type="text" name="hgia_first_name" id="hgia_first_name" class="input" size="20" value="%s" autocomplete="off" />', filter_input( INPUT_GET, 'hgia_first_name' ) );
+		$output	 .= '</p>';
+		$output	 .= '<p>';
+		$output	 .= '<label for="hgia_last_name">Last Name</label>';
+		$output	 .= sprintf( '<input type="text" name="hgia_last_name" id="hgia_last_name" class="input" size="20" value="%s" autocomplete="off" />', filter_input( INPUT_GET, 'hgia_last_name' ) );
 		$output	 .= '</p>';
 		$output	 .= '<p>';
 		$output	 .= '<label for="hgia_email">Email</label>';
-		$output	 .= '<input type="email" name="hgia_email" id="hgia_email" class="input" size="20" autocomplete="off" />';
+		$output	 .= sprintf( '<input type="email" name="hgia_email" id="hgia_email" class="input" size="20" value="%s" autocomplete="off" />', filter_input( INPUT_GET, 'hgia_email' ) );
+		$output	 .= '</p>';
+		$output	 .= '<p>';
+		$output	 .= '<label for="hgia_password">Password</label>';
+		$output	 .= '<input type="password" name="hgia_password" id="hgia_password" class="input" size="20" autocomplete="off" />';
+		$output	 .= '</p>';
+		$output	 .= '<p>';
+		$output	 .= '<label for="hgia_timezone">Your Timezone</label>';
+		$output	 .= '<select name="hgia_timezone" id="hgia_timezone" class="input_select" />';
+		foreach ( $tz_a as $key => $tz ) {
+			$output .= sprintf( '<option value="%s" %s>%s</option>', $key, selected( filter_input( INPUT_GET, 'hgia_timezone' ), $key, false ), $tz );
+		}
+
+		$output	 .= '</select>';
 		$output	 .= '</p>';
 
-		$output	 .= '<input type="submit" name="submit" value="Register"/>';
+		$output	 .= '<input type="submit" name="submit" value="Create Account"/>';
 		$output	 .= '</form>';
+
 
 		return $output;
 	}

@@ -113,6 +113,11 @@ class How_Goes_It {
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-how-goes-it-admin.php';
+		
+		/**
+		 * The class responsible for executing registration action.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-how-goes-it-registration.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
@@ -162,6 +167,9 @@ class How_Goes_It {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$plugin_admin_reg = new How_Goes_It_Admin_Registration( $this->get_plugin_name(), $this->get_version() );
+
+		$this->loader->add_action( 'admin_post_nopriv_hgi_create_user', $plugin_admin_reg, 'hgi_register_user_action' );
 	}
 
 	/**
@@ -188,8 +196,8 @@ class How_Goes_It {
 		$this->loader->add_action( 'login_redirect', $plugin_user_actions, 'redirect_after_login', 10, 3 );
 		$this->loader->add_action( 'wp_logout', $plugin_user_actions, 'cs_logout_redirect' );
 		$this->loader->add_action( 'init', $plugin_user_actions, 'cs_disable_admin_bar' );
-		$this->loader->add_action( 'login_form_register', $plugin_user_actions, 'cs_do_register_user' );
-		$this->loader->add_action( 'login_form_register', $plugin_user_actions, 'cs_redirect_from_wp_register' );
+		$this->loader->add_action( 'login_form_register', $plugin_user_actions, 'cs_do_register_user', 10, 0 );
+		$this->loader->add_action( 'login_form_register', $plugin_user_actions, 'cs_redirect_from_wp_register', 10, 0  );
 
 		$this->loader->add_filter( 'authenticate', $plugin_user_actions, 'cs_maybe_redirect_at_authentication', 101, 3 );
 	}
