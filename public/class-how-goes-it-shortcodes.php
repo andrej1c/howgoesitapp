@@ -133,40 +133,10 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 			$tz_name     = str_replace( '_', ' ', $tz_name );
 			$tz_a[ $tz ] = $tz_name;
 		}
-		$output = '';
 
-		$output .= '<form name="registrationform" id="loginform" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" method="post">';
-		$output .= wp_nonce_field( 'hgi_registration', 'hgi_nonce_field', true, false );
-		$output .= '<input type="hidden" name="action" value="hgi_create_user">';
-		// TODO: Add check for HGI Code and set it to hidden field.
-		$output .= '<p>';
-		$output .= '<label for="hgia_first_name">First Name</label>';
-		$output .= sprintf( '<input type="text" name="hgia_first_name" id="hgia_first_name" class="input" size="20" value="%s" autocomplete="off" />', filter_input( INPUT_GET, 'hgia_first_name' ) );
-		$output .= '</p>';
-		$output .= '<p>';
-		$output .= '<label for="hgia_last_name">Last Name</label>';
-		$output .= sprintf( '<input type="text" name="hgia_last_name" id="hgia_last_name" class="input" size="20" value="%s" autocomplete="off" />', filter_input( INPUT_GET, 'hgia_last_name' ) );
-		$output .= '</p>';
-		$output .= '<p>';
-		$output .= '<label for="hgia_email">Email</label>';
-		$output .= sprintf( '<input type="email" name="hgia_email" id="hgia_email" class="input" size="20" value="%s" autocomplete="off" />', filter_input( INPUT_GET, 'hgia_email' ) );
-		$output .= '</p>';
-		$output .= '<p>';
-		$output .= '<label for="hgia_password">Password</label>';
-		$output .= '<input type="password" name="hgia_password" id="hgia_password" class="input" size="20" autocomplete="off" />';
-		$output .= '</p>';
-		$output .= '<p>';
-		$output .= '<label for="hgia_timezone">Your Timezone</label>';
-		$output .= '<select name="hgia_timezone" id="hgia_timezone" class="input_select" />';
-		foreach ( $tz_a as $key => $tz ) {
-			$output .= sprintf( '<option value="%s" %s>%s</option>', $key, selected( filter_input( INPUT_GET, 'hgia_timezone' ), $key, false ), $tz );
-		}
-
-		$output .= '</select>';
-		$output .= '</p>';
-
-		$output .= '<input type="submit" name="submit" value="Create Account"/>';
-		$output .= '</form>';
+		ob_start();
+		include_once plugin_dir_path( __FILE__ ) . 'partials/how-goes-it-public-registration.php';
+		$output = ob_get_clean();
 
 		return $output;
 	}
