@@ -115,6 +115,11 @@ class How_Goes_It {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-how-goes-it-admin.php';
 
 		/**
+		 * The class responsible for creating tables.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-how-goes-it-initialize.php';
+
+		/**
 		 * The class responsible for executing registration action.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-how-goes-it-registration.php';
@@ -167,6 +172,11 @@ class How_Goes_It {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+
+		$plugin_tables = new How_Goes_It_Admin_Initialize( $this->get_plugin_name(), $this->get_version() );
+
+		$this->loader->add_action( 'init', $plugin_tables, 'init', 10, 0 );
+		$this->loader->add_action( 'plugins_loaded', $plugin_tables, 'hgi_update_db_check' );
 
 		$plugin_admin_reg = new How_Goes_It_Admin_Registration( $this->get_plugin_name(), $this->get_version() );
 
