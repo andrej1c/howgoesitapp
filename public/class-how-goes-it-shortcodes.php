@@ -34,45 +34,23 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 	}
 
 	public function howgoesit_my_last_score_func( $atts ) {
-		$a = shortcode_atts(
-			array(
-				'formid'        => -1,
-				'user_id_field' => 1,
-				'score_field'   => 2,
-			), $atts
-		);
+		require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-last-score.php';
 
-		$form_id       = $a['formid'];
-		$user_id_field = $a['user_id_field'];
-		$score_field   = $a['score_field'];
-
-		if ( -1 === $form_id ) {
-			return 'No form found.';
-		}
 		if ( ! is_user_logged_in() ) {
 			return 'Please login first.';
 		}
-		$current_user                       = wp_get_current_user();
-		$search_criteria['field_filters'][] = array(
-			'key'   => $user_id_field,
-			'value' => $current_user->user_login,
-		);
-		$sorting                            = array();
-		$paging                             = array(
-			'offset'    => 0,
-			'page_size' => 1,
-		);
+		$current_user = get_current_user_id();
 
-		$entries = GFAPI::get_entries( $form_id, $search_criteria, $sorting, $paging );
-		if ( 0 < count( $entries ) ) {
-			$entry = $entries[0];
-		} else {
+		$last_score = new How_Goes_It_Model_Last_Score();
+		$entry      = $last_score->get_last_score( $current_user );
+
+		if ( empty( $entry ) ) {
 			return 'No saved scores yet.';
 		}
-		$created_at = $entry['date_created'];
-		$status     = $entry[ $score_field ];
 
-		$html = sprintf( '<p>Your last score: %s, set %s ago.</p>', $status, human_time_diff( strtotime( $created_at ), time() ) );
+		$created_at = $entry->hgi_timestamp;
+		$status     = $entry->hgi_last_score;
+		$html       = sprintf( '<p>Your last score: %s, set %s ago.</p>', $status, human_time_diff( $created_at, time() ) );
 
 		return $html;
 	}
@@ -102,12 +80,19 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 	}
 
 	function cs_score_entry() {
-		return 'form will be here';
+		if ( ! is_user_logged_in() ) {
+			return '';
+		}
+		ob_start();
+		include_once plugin_dir_path( __FILE__ ) . 'partials/how-goes-it-public-score-form.php';
+		$output = ob_get_clean();
+
+		return $output;
 	}
 
 	function cs_register_shortcode() {
 		if ( ! get_option( 'users_can_register' ) ) {
-			return __( 'Registration is currently closed.', 'wpskilltestplugin' );
+			return __( 'Registration is currently closed.', $this->plugin_name );
 		} else {
 			$content = '';
 			if ( filter_input( INPUT_GET, 'error' ) ) {

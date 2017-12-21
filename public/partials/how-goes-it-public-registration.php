@@ -20,7 +20,7 @@
 	</p>
 	<p>
 		<label for="hgia_timezone">Your Timezone</label>
-		<select name="hgia_timezone" id="hgia_timezone" class="input_select" />
+		<select name="hgia_timezone" id="hgia_timezone" class="input_select">
 		<?php
 		foreach ( $tz_a as $key => $tz ) {
 			echo sprintf( '<option value="%s" %s>%s</option>', esc_attr( $key ), selected( filter_input( INPUT_GET, 'hgia_timezone' ), esc_attr( $key ), false ), $tz );

@@ -18,7 +18,7 @@
  */
 class How_Goes_It_Admin_Initialize extends How_Goes_It_Admin {
 
-	private $hgi_db_version = '1.0.0';
+	private $hgi_db_version = '1.0.1';
 
 	public function __construct( $plugin_name, $version ) {
 		parent::__construct( $plugin_name, $version );
@@ -39,7 +39,7 @@ class How_Goes_It_Admin_Initialize extends How_Goes_It_Admin {
 	   `hgi_id` INT NOT NULL AUTO_INCREMENT,
 	   `hgi_user_id` INT NOT NULL,
 	   `hgi_score` INT NOT NULL,
-	   `hgi_timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	   `hgi_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	   PRIMARY KEY (`hgi_id`, `hgi_user_id`),
 	   UNIQUE INDEX `id_UNIQUE` (`hgi_id` ASC))
 		 ENGINE = InnoDB $charset_collate;";
@@ -72,7 +72,7 @@ class How_Goes_It_Admin_Initialize extends How_Goes_It_Admin {
 		$sql = "CREATE TABLE $table_last_score (
         `hgi_user_id` INT NOT NULL,
         `hgi_last_score` INT NOT NULL,
-        `hgi_timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `hgi_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (`hgi_user_id`),
         UNIQUE INDEX `hgi_user_id_UNIQUE` (`hgi_user_id` ASC))
 		ENGINE = InnoDB $charset_collate;";
