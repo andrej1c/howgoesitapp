@@ -85,7 +85,7 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 					'last_name'     => $last_name,
 					'user_email'    => $email,
 					'user_nicename' => $first_name . ' ' . $last_name,
-					'user_pass'     => md5( $password ),
+					'user_pass'     => $password,
 					'user_login'    => $user_login,
 				)
 			);

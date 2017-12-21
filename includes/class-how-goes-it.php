@@ -115,9 +115,19 @@ class How_Goes_It {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-how-goes-it-admin.php';
 
 		/**
+		 * The class responsible for creating tables.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-how-goes-it-initialize.php';
+
+		/**
 		 * The class responsible for executing registration action.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-how-goes-it-registration.php';
+
+		/**
+		 * The class responsible for executing score actions.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-how-goes-it-score-actions.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
@@ -168,11 +178,21 @@ class How_Goes_It {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
+		$plugin_tables = new How_Goes_It_Admin_Initialize( $this->get_plugin_name(), $this->get_version() );
+
+		$this->loader->add_action( 'init', $plugin_tables, 'init', 10, 0 );
+		$this->loader->add_action( 'plugins_loaded', $plugin_tables, 'hgi_update_db_check' );
+
 		$plugin_admin_reg = new How_Goes_It_Admin_Registration( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_post_nopriv_hgi_create_user', $plugin_admin_reg, 'hgi_register_user_action' );
 		$this->loader->add_action( 'admin_post_nopriv_hgi_validate_user', $plugin_admin_reg, 'hgi_validate_user_action' );
 		$this->loader->add_action( 'wp_authenticate_user', $plugin_admin_reg, 'hgi_validate_user_on_login' );
+
+		$plugin_score_actions = new How_Goes_It_Admin_Score_Actions( $this->get_plugin_name(), $this->get_version() );
+
+		$this->loader->add_action( 'admin_post_hgi_add_score', $plugin_score_actions, 'hgi_set_new_score_action' );
+		$this->loader->add_action( 'admin_post_nopriv_hgi_add_score', $plugin_score_actions, 'hgi_set_new_score_action' );
 	}
 
 	/**
