@@ -12,7 +12,7 @@
 /**
  * Define model for score.
  *
- * Define actions for save, update, read for score.
+ * Define actions for save score.
  *
  * @package    How_Goes_It
  * @subpackage How_Goes_It/models
@@ -59,7 +59,7 @@ class How_Goes_It_Model_Score {
 				'hgi_score'   => $score,
 			),
 			array(
-				'%s',
+				'%d',
 				'%d',
 			)
 		);

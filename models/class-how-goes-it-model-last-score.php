@@ -1,6 +1,6 @@
 <?php
 /**
- * Model for Score.
+ * Model for Last Score.
  *
  * @link       #
  * @since      1.0.0
@@ -10,9 +10,9 @@
  */
 
 /**
- * Define model for score.
+ * Define model for last score.
  *
- * Define actions for save, update, read for score.
+ * Define actions for save, and read for last score.
  *
  * @package    How_Goes_It
  * @subpackage How_Goes_It/models
