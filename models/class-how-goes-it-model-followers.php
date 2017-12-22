@@ -72,7 +72,7 @@ class How_Goes_It_Model_Followers {
 		global $wpdb;
 		$followers_a = [];
 		$table_name  = $wpdb->prefix . $this->table_name;
-		$followers   = $wpdb->get_result( $wpdb->prepare( "SELECT hgi_user_id, hgi_follower_user_id FROM $table_name WHERE hgi_user_id = %d", $user_id ) );
+		$followers   = $wpdb->get_results( $wpdb->prepare( "SELECT hgi_user_id, hgi_follower_user_id FROM $table_name WHERE hgi_user_id = %d", $user_id ) );
 		if ( 0 < count( $followers ) ) {
 			foreach ( $followers as $row ) {
 				$first_name    = get_user_meta( $row->hgi_follower_user_id, 'first_name', true );

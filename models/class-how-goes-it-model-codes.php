@@ -19,7 +19,7 @@
  * @subpackage How_Goes_It/models
  * @author     Jakub <jakub.triska@cihosolutions.com>
  */
-class How_Goes_It_Model_Followers {
+class How_Goes_It_Model_Codes {
 	/**
 	 * Name of the table.
 	 *
@@ -44,14 +44,14 @@ class How_Goes_It_Model_Followers {
 	 *
 	 * @param  int $user_id  User id.
 	 * @param  int $follower_id Follower id.
-	 * @return mixed return success or failure.
+	 * @return mixed return code or false.
 	 */
 	public function hgi_store_code( $user_id ) {
 		global $wpdb;
 
 		$has_code = $this->hgi_get_code( $user_id );
 		if ( false !== $has_code ) {
-			return true;
+			return $has_code;
 		}
 		$new_code = $this->get_token( 20 );
 		$result   = $wpdb->insert(
@@ -65,7 +65,10 @@ class How_Goes_It_Model_Followers {
 				'%s',
 			)
 		);
-		return $result;
+		if ( false !== $result ) {
+			return $new_code;
+		}
+		return false;
 	}
 
 	/**
