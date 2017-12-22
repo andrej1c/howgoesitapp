@@ -31,6 +31,7 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 		add_shortcode( 'leo_score_entry', [ $this, 'cs_score_entry' ] );
 		add_shortcode( 'howgoesit_my_last_score', [ $this, 'howgoesit_my_last_score_func' ] );
 		add_shortcode( 'leoscore_register', [ $this, 'cs_register_shortcode' ] );
+		add_shortcode( 'hgi_followers_or_code', [ $this, 'hgi_display_followers_or_invite_code' ] );
 	}
 
 	public function howgoesit_my_last_score_func( $atts ) {
@@ -120,10 +121,50 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 		}
 
 		ob_start();
-		include_once plugin_dir_path( __FILE__ ) . 'partials/how-goes-it-public-registration.php';
+		include_once plugin_dir_path( __FILE__ ) . 'partials/how-goes-it-public-registration-form.php';
 		$output = ob_get_clean();
 
 		return $output;
+	}
+
+	function hgi_display_followers_or_invite_code( $atts ) {
+		if ( ! is_user_logged_in() ) {
+			return 'Please login first.';
+		}
+		$show_code = filter_input( INPUT_GET, 'action' );
+		if ( 'show_code' !== $show_code ) {
+			// Show list of followers.
+			require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-followers.php';
+			$follower_c      = new How_Goes_It_Model_Followers();
+			$current_user_id = get_current_user_id();
+			$followers       = $follower_c->hgi_get_followers_of_user( $current_user_id );
+			$follow_url      = add_query_arg(
+				array(
+					'action' => 'show_code',
+				), get_permalink()
+			);
+			ob_start();
+			include_once plugin_dir_path( __FILE__ ) . 'partials/how-goes-it-public-followers.php';
+			$output = ob_get_clean();
+		} else {
+			// Show user code.
+			require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-codes.php';
+			$codes           = new How_Goes_It_Model_Codes();
+			$current_user_id = get_current_user_id();
+			$code            = $codes->hgi_store_code( $current_user_id );
+			if ( false === $code ) {
+				return 'There was an error while getting your code, please refresh page to try again.';
+			}
+			$code_url = add_query_arg(
+				array(
+					'c' => $code,
+				), get_site_url()
+			);
+			ob_start();
+			include_once plugin_dir_path( __FILE__ ) . 'partials/how-goes-it-public-show-code.php';
+			$output = ob_get_clean();
+		}
+		echo $output;
 	}
 
 }
