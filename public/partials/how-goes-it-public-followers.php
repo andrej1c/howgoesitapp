@@ -17,7 +17,7 @@ if ( 0 < count( $followers ) ) { ?>
 						<?php echo esc_attr( $follower['follower_name'] ); ?>
 					</td>
 					<td>
-						<a href="#">Disconnect</a> --Implement
+						<?php echo ( 'active' === $follower['follower_status'] ) ? '<a href="#">Disconnect</a> --Implement' : 'Non active, click on link in email.'; ?>
 					</td>
 				</tr>
 				<?php } ?>

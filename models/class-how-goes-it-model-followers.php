@@ -40,23 +40,32 @@ class How_Goes_It_Model_Followers {
 	private $follower_id;
 
 	/**
+	 * Status of the follower. Active or nonactive. Not user, represents table column.
+	 *
+	 * @var string
+	 */
+	private $status;
+
+	/**
 	 * Store follower to the user.
 	 *
 	 * @param  int $user_id  User id.
 	 * @param  int $follower_id Follower id.
 	 * @return mixed return success or failure.
 	 */
-	public function hgi_store_follower( $user_id, $follower_id ) {
+	public function hgi_store_follower( $user_id, $follower_id, $status ) {
 		global $wpdb;
 		$result = $wpdb->insert(
 			$wpdb->prefix . $this->table_name,
 			array(
 				'hgi_user_id'          => $user_id,
 				'hgi_follower_user_id' => $follower_id,
+				'hgi_status'           => $status,
 			),
 			array(
 				'%d',
 				'%d',
+				'%s',
 			)
 		);
 		return $result;
@@ -72,14 +81,15 @@ class How_Goes_It_Model_Followers {
 		global $wpdb;
 		$followers_a = [];
 		$table_name  = $wpdb->prefix . $this->table_name;
-		$followers   = $wpdb->get_results( $wpdb->prepare( "SELECT hgi_user_id, hgi_follower_user_id FROM $table_name WHERE hgi_user_id = %d", $user_id ) );
+		$followers   = $wpdb->get_results( $wpdb->prepare( "SELECT hgi_user_id, hgi_follower_user_id, hgi_status FROM $table_name WHERE hgi_user_id = %d", $user_id ) );
 		if ( 0 < count( $followers ) ) {
 			foreach ( $followers as $row ) {
 				$first_name    = get_user_meta( $row->hgi_follower_user_id, 'first_name', true );
 				$last_name     = get_user_meta( $row->hgi_follower_user_id, 'last_name', true );
 				$followers_a[] = [
-					'follower_id'   => $row->hgi_follower_user_id,
-					'follower_name' => $first_name . ' ' . $last_name,
+					'follower_id'     => $row->hgi_follower_user_id,
+					'follower_name'   => $first_name . ' ' . $last_name,
+					'follower_status' => $row->hgi_status,
 				];
 			}
 		}
@@ -97,7 +107,7 @@ class How_Goes_It_Model_Followers {
 		global $wpdb;
 		$users_a    = [];
 		$table_name = $wpdb->prefix . $this->table_name;
-		$users      = $wpdb->get_result( $wpdb->prepare( "SELECT hgi_user_id, hgi_follower_user_id FROM $table_name WHERE hgi_follower_user_id = %d", $follower_id ) );
+		$users      = $wpdb->get_results( $wpdb->prepare( "SELECT hgi_user_id, hgi_follower_user_id, hgi_status FROM $table_name WHERE hgi_follower_user_id = %d AND hgi_status = 'active'", $follower_id ) );
 		if ( 0 < count( $users ) ) {
 			foreach ( $users as $row ) {
 				$first_name = get_user_meta( $row->hgi_user_id, 'first_name', true );
@@ -110,6 +120,41 @@ class How_Goes_It_Model_Followers {
 		}
 
 		return $users_a;
+	}
+
+	public function hgi_check_waiting_for_approval( $follower_id ) {
+		global $wpdb;
+		$users_a    = [];
+		$table_name = $wpdb->prefix . $this->table_name;
+		$users      = $wpdb->get_results( $wpdb->prepare( "SELECT hgi_user_id FROM $table_name WHERE hgi_follower_user_id = %d AND hgi_status = 'nonactive'", $follower_id ) );
+		if ( 0 < count( $users ) ) {
+			foreach ( $users as $row ) {
+				// TODO: get codes from the users where there is nonactive link and show it for the follower awaiting approval.
+			}
+		}
+	}
+
+	public function hgi_update_follower( $requested_user_id, $follower_id, $status ) {
+		global $wpdb;
+		$table_name = $wpdb->prefix . $this->table_name;
+		$result     = $wpdb->update(
+			$table_name,
+			array(
+				'hgi_status' => $status,  // string
+			),
+			array(
+				'hgi_user_id'          => $requested_user_id,
+				'hgi_follower_user_id' => $follower_id,
+			),
+			array(
+				'%s',   // value1
+			),
+			array(
+				'%d',
+				'%d',
+			)
+		);
+		return $result;
 	}
 
 	// TODO: implement function for removing follower from the user.
