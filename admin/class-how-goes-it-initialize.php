@@ -18,7 +18,7 @@
  */
 class How_Goes_It_Admin_Initialize extends How_Goes_It_Admin {
 
-	private $hgi_db_version = '1.0.1';
+	private $hgi_db_version = '1.0.2';
 
 	public function __construct( $plugin_name, $version ) {
 		parent::__construct( $plugin_name, $version );
@@ -62,6 +62,7 @@ class How_Goes_It_Admin_Initialize extends How_Goes_It_Admin {
 		$sql = "CREATE TABLE $table_followers (
         `hgi_user_id` INT NOT NULL,
         `hgi_follower_user_id` INT NOT NULL,
+		`hgi_status` VARCHAR(10) NOT NULL,
         PRIMARY KEY (`hgi_user_id`, `hgi_follower_user_id`))
 		ENGINE = InnoDB $charset_collate;";
 

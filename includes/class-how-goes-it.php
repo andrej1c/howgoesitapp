@@ -130,6 +130,11 @@ class How_Goes_It {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-how-goes-it-score-actions.php';
 
 		/**
+		 * The class responsible for executing follower actions.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-how-goes-it-follower-actions.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
@@ -193,6 +198,13 @@ class How_Goes_It {
 
 		$this->loader->add_action( 'admin_post_hgi_add_score', $plugin_score_actions, 'hgi_set_new_score_action' );
 		$this->loader->add_action( 'admin_post_nopriv_hgi_add_score', $plugin_score_actions, 'hgi_set_new_score_action' );
+
+		$plugin_follower_actions = new How_Goes_It_Admin_Follower_Actions( $this->get_plugin_name(), $this->get_version() );
+
+		$this->loader->add_action( 'template_redirect', $plugin_follower_actions, 'hgi_add_follower' );
+		$this->loader->add_action( 'admin_post_nopriv_hgi_add_follower', $plugin_follower_actions, 'hgi_approve_follower' );
+		$this->loader->add_action( 'admin_post_hgi_add_follower', $plugin_follower_actions, 'hgi_approve_follower' );
+		$this->loader->add_action( 'login_redirect', $plugin_follower_actions, 'hgi_login_url_redirect', 10, 3 );
 	}
 
 	/**

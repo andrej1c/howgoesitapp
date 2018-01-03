@@ -48,6 +48,7 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 			$email         = esc_attr( filter_input( INPUT_POST, 'hgia_email' ) );
 			$password      = esc_attr( filter_input( INPUT_POST, 'hgia_password' ) );
 			$timezone      = esc_attr( filter_input( INPUT_POST, 'hgia_timezone' ) );
+			$follower_code = esc_attr( filter_input( INPUT_POST, 'follower_code' ) );
 			$email_invalid = true;
 			if ( is_email( $email ) ) {
 				$email_invalid = false;
@@ -106,6 +107,7 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 						'action' => 'hgi_validate_user',
 						'key'    => $code,
 						'user'   => $user_id,
+						'c'      => $follower_code,
 					), esc_url( admin_url( 'admin-post.php' ) )
 				);
 
@@ -142,6 +144,7 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 		}
 		$user = absint( filter_input( INPUT_GET, 'user' ) );
 		$key  = esc_attr( filter_input( INPUT_GET, 'key' ) );
+		$code = esc_attr( filter_input( INPUT_GET, 'c' ) );
 		if ( 0 === $user || empty( $key ) ) {
 			wp_die(
 				__( 'Invalid key or user.', $this->plugin_name ), __( 'Error', $this->plugin_name ), array(
@@ -149,6 +152,7 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 				)
 			);
 		}
+
 		global $wpdb;
 		$user_to_validate = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->users WHERE ID = %d AND user_activation_key = %s", $user, $key ) );
 		if ( is_null( $user_to_validate ) ) {
@@ -159,7 +163,17 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 			);
 		} else {
 			update_user_meta( $user, 'hgi_user_flag', 'active' );
-			wp_safe_redirect( wp_login_url() );
+			if ( ! empty( $code ) ) {
+				$login_url = add_query_arg(
+					array(
+						'c' => $code,
+					),
+					'login'
+				);
+			} else {
+				$login_url = wp_login_url();
+			}
+			wp_safe_redirect( $login_url );
 			die();
 		}
 	}

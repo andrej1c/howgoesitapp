@@ -1,7 +1,7 @@
 <form name="registrationform" id="loginform" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
 	<?php echo wp_nonce_field( 'hgi_registration', 'hgi_nonce_field', true, false ); ?>
 	<input type="hidden" name="action" value="hgi_create_user">
-	<!--  TODO: Add check for HGI Code and set it to hidden field. -->
+	<input type="hidden" name="follower_code" value="<?php echo filter_input( INPUT_GET, 'c' ); ?>">
 	<p>
 		<label for="hgia_first_name">First Name</label>
 		<input type="text" name="hgia_first_name" id="hgia_first_name" class="input" size="20" value="<?php echo filter_input( INPUT_GET, 'hgia_first_name' ); ?>" autocomplete="off" />

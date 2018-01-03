@@ -89,6 +89,24 @@ class How_Goes_It_Model_Codes {
 		}
 	}
 
+	/**
+	 * Get user by code.
+	 *
+	 * @param  string $code Code.
+	 * @return mixed false or user id.
+	 */
+	public function hgi_get_user_by_code( $code ) {
+		global $wpdb;
+		$users_a    = [];
+		$table_name = $wpdb->prefix . $this->table_name;
+		$user       = $wpdb->get_row( $wpdb->prepare( "SELECT hgi_user_id FROM $table_name WHERE hgi_code = %s", $code ) );
+		if ( is_null( $user ) ) {
+			return false;
+		} else {
+			return $user->hgi_user_id;
+		}
+	}
+
 	public function crypto_rand_secure( $min, $max ) {
 		$range = $max - $min;
 		if ( $range < 1 ) {
