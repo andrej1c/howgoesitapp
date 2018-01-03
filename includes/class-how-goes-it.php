@@ -204,6 +204,7 @@ class How_Goes_It {
 		$this->loader->add_action( 'template_redirect', $plugin_follower_actions, 'hgi_add_follower' );
 		$this->loader->add_action( 'admin_post_nopriv_hgi_add_follower', $plugin_follower_actions, 'hgi_approve_follower' );
 		$this->loader->add_action( 'admin_post_hgi_add_follower', $plugin_follower_actions, 'hgi_approve_follower' );
+		$this->loader->add_action( 'login_redirect', $plugin_follower_actions, 'hgi_login_url_redirect', 10, 3 );
 	}
 
 	/**

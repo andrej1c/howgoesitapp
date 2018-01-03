@@ -70,9 +70,9 @@ class How_Goes_It_Admin_Follower_Actions extends How_Goes_It_Admin {
 					), esc_url( admin_url( 'admin-post.php' ) )
 				);
 
-				$message = sprintf( '%s %s (%s) used the authorization code %s you sent them to create their account and is requesting to stay in tune with your score.<br />To apprive click the link bellow. [%s]', $f_first_name, $f_last_name, $f_email, $code, $approve_link );
+				$message = sprintf( '%s %s (%s) used the authorization code %s you sent them to create their account and is requesting to stay in tune with your score.<br />To approve click the link bellow. [%s]', $f_first_name, $f_last_name, $f_email, $code, $approve_link );
 				wp_mail( $email, 'Approve authorization code', $message );
-				wp_safe_redirect( get_site_url() );
+				wp_safe_redirect( home_url( 'following' ) );
 				die();
 
 			} else {
@@ -103,7 +103,12 @@ class How_Goes_It_Admin_Follower_Actions extends How_Goes_It_Admin {
 			);
 		}
 		if ( ! is_user_logged_in() ) {
-			wp_safe_redirect( wp_login_url( urlencode( $_SERVER['REQUEST_URI'] ) ) ); // TODO: Not working properly.
+			$redirect = add_query_arg(
+				array(
+					'redirect_to' => rawurlencode( get_site_url() . $_SERVER['REQUEST_URI'] ),
+				), '/login'
+			);
+			wp_safe_redirect( $redirect );
 			die();
 		} else {
 			require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-codes.php';
@@ -120,10 +125,22 @@ class How_Goes_It_Admin_Follower_Actions extends How_Goes_It_Admin {
 			require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-followers.php';
 			$followers_o = new How_Goes_It_Model_Followers();
 			$result      = $followers_o->hgi_update_follower( get_current_user_id(), $follower, 'active' );
-			wp_safe_redirect( get_site_url() );
+			wp_safe_redirect( home_url( 'followers' ) );
 			die();
 		}
 
 	}
+
+	public function hgi_login_url_redirect( $redirect_to, $request, $user ) {
+		if ( stripos( $redirect_to, 'hgi_add_follower' ) ) {
+			wp_safe_redirect( $redirect_to );
+			die();
+		}
+		if ( stripos( $redirect_to, '?c=' ) ) {
+			wp_safe_redirect( $redirect_to );
+			die();
+		}
+	}
+
 
 }

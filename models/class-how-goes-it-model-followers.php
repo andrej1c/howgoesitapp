@@ -105,16 +105,34 @@ class How_Goes_It_Model_Followers {
 	 */
 	public function hgi_get_users_by_follower( $follower_id ) {
 		global $wpdb;
-		$users_a    = [];
-		$table_name = $wpdb->prefix . $this->table_name;
-		$users      = $wpdb->get_results( $wpdb->prepare( "SELECT hgi_user_id, hgi_follower_user_id, hgi_status FROM $table_name WHERE hgi_follower_user_id = %d AND hgi_status = 'active'", $follower_id ) );
+		$users_a               = [];
+		$table_name_followers  = $wpdb->prefix . $this->table_name;
+		$table_name_last_score = $wpdb->prefix . 'last_score';
+
+		$users = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT followers.hgi_user_id,
+				followers.hgi_follower_user_id,
+				followers.hgi_status,
+				last_score.hgi_last_score,
+				last_score.hgi_timestamp
+			FROM $table_name_followers followers
+			LEFT JOIN $table_name_last_score last_score ON followers.hgi_user_id = last_score.hgi_user_id
+			WHERE hgi_follower_user_id = %d AND hgi_status = 'active'", $follower_id
+			)
+		);
+
 		if ( 0 < count( $users ) ) {
 			foreach ( $users as $row ) {
 				$first_name = get_user_meta( $row->hgi_user_id, 'first_name', true );
 				$last_name  = get_user_meta( $row->hgi_user_id, 'last_name', true );
+				$score      = ( ! is_null( $row->hgi_last_score ) ? (int) $row->hgi_last_score : 0 );
+				$timestamp  = ( ! is_null( $row->hgi_timestamp ) ? $row->hgi_timestamp : 'No entry yet.' );
 				$users_a[]  = [
-					'user_id'   => $row->hgi_user_id,
-					'user_name' => $first_name . ' ' . $last_name,
+					'user_id'        => $row->hgi_user_id,
+					'user_name'      => $first_name . ' ' . $last_name,
+					'user_score'     => $score,
+					'user_timestamp' => $timestamp,
 				];
 			}
 		}
@@ -124,14 +142,26 @@ class How_Goes_It_Model_Followers {
 
 	public function hgi_check_waiting_for_approval( $follower_id ) {
 		global $wpdb;
-		$users_a    = [];
-		$table_name = $wpdb->prefix . $this->table_name;
-		$users      = $wpdb->get_results( $wpdb->prepare( "SELECT hgi_user_id FROM $table_name WHERE hgi_follower_user_id = %d AND hgi_status = 'nonactive'", $follower_id ) );
+		$nonactive_user_codes_a = [];
+		$table_name_followers   = $wpdb->prefix . $this->table_name;
+		$table_name_codes       = $wpdb->prefix . 'codes';
+		$users                  = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT followers.hgi_user_id,
+				followers.hgi_follower_user_id,
+				followers.hgi_status,
+				codes.hgi_code
+			FROM $table_name_followers followers
+			LEFT JOIN $table_name_codes codes ON followers.hgi_user_id = codes.hgi_user_id
+			WHERE hgi_follower_user_id = %d AND hgi_status = 'nonactive'", $follower_id
+			)
+		);
 		if ( 0 < count( $users ) ) {
 			foreach ( $users as $row ) {
-				// TODO: get codes from the users where there is nonactive link and show it for the follower awaiting approval.
+				$nonactive_user_codes_a[] = $row->hgi_code;
 			}
 		}
+		return $nonactive_user_codes_a;
 	}
 
 	public function hgi_update_follower( $requested_user_id, $follower_id, $status ) {

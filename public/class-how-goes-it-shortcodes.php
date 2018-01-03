@@ -32,6 +32,7 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 		add_shortcode( 'howgoesit_my_last_score', [ $this, 'howgoesit_my_last_score_func' ] );
 		add_shortcode( 'leoscore_register', [ $this, 'cs_register_shortcode' ] );
 		add_shortcode( 'hgi_followers_or_code', [ $this, 'hgi_display_followers_or_invite_code' ] );
+		add_shortcode( 'hgi_users_for_follower', [ $this, 'hgi_users_for_follower_func' ] );
 	}
 
 	public function howgoesit_my_last_score_func( $atts ) {
@@ -72,11 +73,22 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 		}
 
 		do_action( 'wordpress_social_login' );
-
-		wp_login_form();
+		$redirect = ( filter_input( INPUT_GET, 'redirect_to' ) ) ? filter_input( INPUT_GET, 'redirect_to' ) : '';
+		$code     = ( filter_input( INPUT_GET, 'c' ) ) ? filter_input( INPUT_GET, 'c' ) : '';
+		$args     = [];
+		if ( ! empty( $redirect ) ) {
+			$args['redirect'] = esc_url( $redirect );
+		} elseif ( ! empty( $code ) ) {
+			$args['redirect'] = esc_url( get_site_url() . '?c=' . $code );
+		}
+		wp_login_form( $args );
 
 		if ( get_option( 'users_can_register' ) ) {
-			echo '<a href="' . esc_url( home_url( '/register/' ) ) . '">Create new Account</a>';
+			$register_url = home_url( '/register/' );
+			if ( ! empty( $code ) ) {
+				$register_url .= '?c=' . $code;
+			}
+			echo '<a href="' . esc_url( $register_url ) . '">Create new Account</a>';
 		}
 	}
 
@@ -164,7 +176,20 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 			include_once plugin_dir_path( __FILE__ ) . 'partials/how-goes-it-public-show-code.php';
 			$output = ob_get_clean();
 		}
-		echo $output;
+		return $output;
+	}
+
+	function hgi_users_for_follower_func( $atts ) {
+		require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-followers.php';
+		$follower_c             = new How_Goes_It_Model_Followers();
+		$current_user_id        = get_current_user_id();
+		$nonactive_user_codes_a = $follower_c->hgi_check_waiting_for_approval( $current_user_id );
+		$users                  = $follower_c->hgi_get_users_by_follower( $current_user_id );
+
+		ob_start();
+		include_once plugin_dir_path( __FILE__ ) . 'partials/how-goes-it-public-following-users.php';
+		$output = ob_get_clean();
+		return $output;
 	}
 
 }
