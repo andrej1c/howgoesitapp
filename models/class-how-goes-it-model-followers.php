@@ -190,10 +190,21 @@ class How_Goes_It_Model_Followers {
 		return $result;
 	}
 
-	// TODO: implement function for removing follower from the user.
 	public function hgi_remove_follower( $user_id, $follower_id ) {
-
+		global $wpdb;
+		$table_name = $wpdb->prefix . $this->table_name;
+		$result     = $wpdb->delete(
+			$table_name,
+			array(
+				'hgi_user_id'          => $user_id,
+				'hgi_follower_user_id' => $follower_id,
+			),
+			array(
+				'%d',
+				'%d',
+			)
+		);
+		return $result;
 	}
-
 
 }

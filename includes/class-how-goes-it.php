@@ -75,6 +75,7 @@ class How_Goes_It {
 
 		$this->load_dependencies();
 		$this->set_locale();
+		$this->define_urls();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 	}
@@ -169,6 +170,14 @@ class How_Goes_It {
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 	}
 
+	private function define_urls() {
+		define( 'FOLLOWERS_URL', 'followers' );
+		define( 'LOGIN_URL', 'login' );
+		define( 'FOLLOWING_URL', 'following' );
+		define( 'REGISTER_URL', 'register' );
+		define( 'SCORE_URL', 'score' );
+	}
+
 	/**
 	 * Register all of the hooks related to the admin area functionality
 	 * of the plugin.
@@ -205,6 +214,8 @@ class How_Goes_It {
 		$this->loader->add_action( 'admin_post_nopriv_hgi_add_follower', $plugin_follower_actions, 'hgi_approve_follower' );
 		$this->loader->add_action( 'admin_post_hgi_add_follower', $plugin_follower_actions, 'hgi_approve_follower' );
 		$this->loader->add_action( 'login_redirect', $plugin_follower_actions, 'hgi_login_url_redirect', 10, 3 );
+		$this->loader->add_action( 'admin_post_hgi_disconnect_follower', $plugin_follower_actions, 'hgi_disconnect_follower_from_user', 10, 3 );
+		$this->loader->add_action( 'admin_post_hgi_disconnect_user', $plugin_follower_actions, 'hgi_disconnect_user_from_follower', 10, 3 );
 	}
 
 	/**
