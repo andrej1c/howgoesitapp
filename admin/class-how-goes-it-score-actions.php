@@ -11,6 +11,7 @@
 
 require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-last-score.php';
 require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-score.php';
+require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-followers.php';
 /**
  * Score actions.
  *
@@ -78,6 +79,9 @@ class How_Goes_It_Admin_Score_Actions extends How_Goes_It_Admin {
 				die();
 			} else {
 				// TODO: if $hgia_score < 4, find followers and send them emails.
+				if ( $hgia_score < 4 ) {
+					$this->hgi_send_notification_to_followers( $hgia_current_user, $hgia_score );
+				}
 				$message  = 'Your score was successfully set.';
 				$redirect = add_query_arg(
 					array(
@@ -90,4 +94,28 @@ class How_Goes_It_Admin_Score_Actions extends How_Goes_It_Admin {
 		}
 	}
 
+	public function hgi_send_notification_to_followers( $current_user, $score ) {
+		$user_info  = get_userdata( $current_user );
+		$first_name = $user_info->first_name;
+		$last_name  = $user_info->last_name;
+
+		$followers_o = new How_Goes_It_Model_Followers();
+		$followers_a = $followers_o->hgi_get_followers_of_user( $current_user );
+		// TODO: store these messages into table and send them by cron?
+		foreach ( $followers_a as $follower ) {
+			$body = sprintf(
+				'Hi %1$s,'
+				. '<p>%2$s just changed his score to %3$d and because scores 1-3 on our scale are the "need help" scores we are sending you a notification.</p>'
+				. '<p>If you and %2$s have arranged for what %2$s finds most helpful in these situation, now would be the time to do that.</p>'
+				. '<p>If you feel uncertain how to help %2$s, take a quick glance at our <a href="#">Resource section</a> under <a href="#">How to help someone that\'s hurting</a>.</p>',
+				$follower['follower_first_name'], $first_name, $score
+			);
+
+			$to      = $follower['follower_email'];
+			$subject = 'Your friend needs help';
+			$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+			wp_mail( $to, $subject, $body, $headers );
+		}
+	}
 }

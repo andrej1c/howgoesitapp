@@ -110,8 +110,8 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 						'c'      => $follower_code,
 					), esc_url( admin_url( 'admin-post.php' ) )
 				);
-
-				wp_mail( $email, 'Activate your account on How Goes It', 'This is your Activation link: ' . $activation_link );
+				$headers         = array( 'Content-Type: text/html; charset=UTF-8' );
+				wp_mail( $email, 'Activate your account on How Goes It', 'This is your Activation link: ' . $activation_link, $headers );
 
 				wp_die(
 					__( 'Account have been created, check your email for activation link.', $this->plugin_name ), __( 'Success', $this->plugin_name ), array(

@@ -69,9 +69,9 @@ class How_Goes_It_Admin_Follower_Actions extends How_Goes_It_Admin {
 						'following_user' => $c_user_id,
 					), esc_url( admin_url( 'admin-post.php' ) )
 				);
-
-				$message = sprintf( '%s %s (%s) used the authorization code %s you sent them to create their account and is requesting to stay in tune with your score.<br />To approve click the link bellow. [%s]', $f_first_name, $f_last_name, $f_email, $code, $approve_link );
-				wp_mail( $email, 'Approve authorization code', $message );
+				$headers      = array( 'Content-Type: text/html; charset=UTF-8' );
+				$message      = sprintf( '%s %s (%s) used the authorization code %s you sent them to create their account and is requesting to stay in tune with your score.<br />To approve click the link bellow. [%s]', $f_first_name, $f_last_name, $f_email, $code, $approve_link );
+				wp_mail( $email, 'Approve authorization code', $message, $headers );
 				wp_safe_redirect( home_url( 'following' ) );
 				die();
 
