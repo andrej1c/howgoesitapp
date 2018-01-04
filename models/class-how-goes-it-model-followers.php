@@ -25,7 +25,7 @@ class How_Goes_It_Model_Followers {
 	 *
 	 * @var string
 	 */
-	private $table_name = 'followers';
+	private $table_name = 'hgi_followers';
 	/**
 	 * User Id. Not used, represents table column.
 	 *
@@ -110,7 +110,7 @@ class How_Goes_It_Model_Followers {
 		global $wpdb;
 		$users_a               = [];
 		$table_name_followers  = $wpdb->prefix . $this->table_name;
-		$table_name_last_score = $wpdb->prefix . 'last_score';
+		$table_name_last_score = $wpdb->prefix . 'hgi_last_score';
 
 		$users = $wpdb->get_results(
 			$wpdb->prepare(
@@ -147,7 +147,7 @@ class How_Goes_It_Model_Followers {
 		global $wpdb;
 		$nonactive_user_codes_a = [];
 		$table_name_followers   = $wpdb->prefix . $this->table_name;
-		$table_name_codes       = $wpdb->prefix . 'codes';
+		$table_name_codes       = $wpdb->prefix . 'hgi_codes';
 		$users                  = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT followers.hgi_user_id,

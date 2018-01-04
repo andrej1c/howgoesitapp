@@ -25,7 +25,7 @@ class How_Goes_It_Model_Last_Score {
 	 *
 	 * @var string
 	 */
-	private $table_name = 'last_score';
+	private $table_name = 'hgi_last_score';
 
 	/**
 	 * User Id. Not used, represents table column.

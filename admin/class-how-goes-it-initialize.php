@@ -18,7 +18,7 @@
  */
 class How_Goes_It_Admin_Initialize extends How_Goes_It_Admin {
 
-	private $hgi_db_version = '1.0.2';
+	private $hgi_db_version = '1.0.3';
 
 	public function __construct( $plugin_name, $version ) {
 		parent::__construct( $plugin_name, $version );
@@ -31,7 +31,7 @@ class How_Goes_It_Admin_Initialize extends How_Goes_It_Admin {
 	function hgi_install() {
 		global $wpdb;
 
-		$table_scores = $wpdb->prefix . 'scores';
+		$table_scores = $wpdb->prefix . 'hgi_scores';
 
 		$charset_collate = $wpdb->get_charset_collate();
 
@@ -48,7 +48,7 @@ class How_Goes_It_Admin_Initialize extends How_Goes_It_Admin {
 
 		dbDelta( $sql );
 
-		$table_codes = $wpdb->prefix . 'codes';
+		$table_codes = $wpdb->prefix . 'hgi_codes';
 		$sql         = "CREATE TABLE $table_codes (
         `hgi_user_id` INT NOT NULL,
         `hgi_code` VARCHAR(20) NOT NULL,
@@ -57,7 +57,7 @@ class How_Goes_It_Admin_Initialize extends How_Goes_It_Admin {
 
 		dbDelta( $sql );
 
-		$table_followers = $wpdb->prefix . 'followers';
+		$table_followers = $wpdb->prefix . 'hgi_followers';
 
 		$sql = "CREATE TABLE $table_followers (
         `hgi_user_id` INT NOT NULL,
@@ -68,7 +68,7 @@ class How_Goes_It_Admin_Initialize extends How_Goes_It_Admin {
 
 		dbDelta( $sql );
 
-		$table_last_score = $wpdb->prefix . 'last_score';
+		$table_last_score = $wpdb->prefix . 'hgi_last_score';
 
 		$sql = "CREATE TABLE $table_last_score (
         `hgi_user_id` INT NOT NULL,

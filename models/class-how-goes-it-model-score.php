@@ -24,7 +24,7 @@ class How_Goes_It_Model_Score {
 	 *
 	 * @var string
 	 */
-	private $table_name = 'scores';
+	private $table_name = 'hgi_scores';
 	/**
 	 * User Id. Not used, represents table column.
 	 *

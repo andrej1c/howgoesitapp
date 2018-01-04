@@ -25,7 +25,7 @@ class How_Goes_It_Model_Codes {
 	 *
 	 * @var string
 	 */
-	private $table_name = 'codes';
+	private $table_name = 'hgi_codes';
 	/**
 	 * User Id. Not used, represents table column.
 	 *
