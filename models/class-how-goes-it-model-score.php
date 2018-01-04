@@ -66,5 +66,5 @@ class How_Goes_It_Model_Score {
 		return $result;
 	}
 
-	// TODO: add get_list_of_scores function.
+	// TODO: add get_list_of_scores function. For displaying history.
 }

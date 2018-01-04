@@ -84,12 +84,15 @@ class How_Goes_It_Model_Followers {
 		$followers   = $wpdb->get_results( $wpdb->prepare( "SELECT hgi_user_id, hgi_follower_user_id, hgi_status FROM $table_name WHERE hgi_user_id = %d", $user_id ) );
 		if ( 0 < count( $followers ) ) {
 			foreach ( $followers as $row ) {
-				$first_name    = get_user_meta( $row->hgi_follower_user_id, 'first_name', true );
-				$last_name     = get_user_meta( $row->hgi_follower_user_id, 'last_name', true );
+				$user_info     = get_userdata( $row->hgi_follower_user_id );
+				$first_name    = $user_info->first_name;
+				$last_name     = $user_info->last_name;
 				$followers_a[] = [
-					'follower_id'     => $row->hgi_follower_user_id,
-					'follower_name'   => $first_name . ' ' . $last_name,
-					'follower_status' => $row->hgi_status,
+					'follower_id'         => $row->hgi_follower_user_id,
+					'follower_name'       => $first_name . ' ' . $last_name,
+					'follower_first_name' => $first_name,
+					'follower_status'     => $row->hgi_status,
+					'follower_email'      => $user_info->user_email,
 				];
 			}
 		}
