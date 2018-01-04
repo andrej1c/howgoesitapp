@@ -72,7 +72,7 @@ class How_Goes_It_Admin_Follower_Actions extends How_Goes_It_Admin {
 				$headers      = array( 'Content-Type: text/html; charset=UTF-8' );
 				$message      = sprintf( '%s %s (%s) used the authorization code %s you sent them to create their account and is requesting to stay in tune with your score.<br />To approve click the link bellow. [%s]', $f_first_name, $f_last_name, $f_email, $code, $approve_link );
 				wp_mail( $email, 'Approve authorization code', $message, $headers );
-				wp_safe_redirect( home_url( 'following' ) );
+				wp_safe_redirect( home_url( FOLLOWING_URL ) );
 				die();
 
 			} else {
@@ -80,7 +80,7 @@ class How_Goes_It_Admin_Follower_Actions extends How_Goes_It_Admin {
 				$redirect = add_query_arg(
 					array(
 						'c' => rawurlencode( $code ),
-					), '/login'
+					), LOGIN_URL
 				);
 				wp_safe_redirect( $redirect );
 				die();
@@ -106,7 +106,7 @@ class How_Goes_It_Admin_Follower_Actions extends How_Goes_It_Admin {
 			$redirect = add_query_arg(
 				array(
 					'redirect_to' => rawurlencode( get_site_url() . $_SERVER['REQUEST_URI'] ),
-				), '/login'
+				), LOGIN_URL
 			);
 			wp_safe_redirect( $redirect );
 			die();
@@ -125,7 +125,7 @@ class How_Goes_It_Admin_Follower_Actions extends How_Goes_It_Admin {
 			require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-followers.php';
 			$followers_o = new How_Goes_It_Model_Followers();
 			$result      = $followers_o->hgi_update_follower( get_current_user_id(), $follower, 'active' );
-			wp_safe_redirect( home_url( 'followers' ) );
+			wp_safe_redirect( home_url( FOLLOWERS_URL ) );
 			die();
 		}
 
@@ -140,6 +140,74 @@ class How_Goes_It_Admin_Follower_Actions extends How_Goes_It_Admin {
 			wp_safe_redirect( $redirect_to );
 			die();
 		}
+	}
+
+	public function hgi_disconnect_follower_from_user() {
+		$action   = esc_attr( filter_input( INPUT_POST, 'action' ) );
+		$follower = absint( filter_input( INPUT_POST, 'follower_id' ) );
+		$nonce    = filter_input( INPUT_POST, 'hgi_disconnect_nonce_field' );
+		if ( 'hgi_disconnect_follower' !== $action ) {
+			return;
+		}
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'hgi_disconnect' ) ) {
+			wp_die(
+				__( 'Invalid nonce specified', $this->plugin_name ), __( 'Error', $this->plugin_name ), array(
+					'response' => 403,
+				)
+			);
+		}
+		if ( ! is_user_logged_in() ) {
+			$redirect = add_query_arg(
+				array(
+					'redirect_to' => rawurlencode( home_url( FOLLOWERS_URL ) ),
+				), LOGIN_URL
+			);
+			wp_safe_redirect( $redirect );
+			die();
+		} else {
+			$current_user = get_current_user_id();
+			require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-followers.php';
+			$followers_o = new How_Goes_It_Model_Followers();
+			$result      = $followers_o->hgi_remove_follower( $current_user, $follower );
+
+			wp_safe_redirect( home_url( FOLLOWERS_URL ) );
+			die();
+		}
+
+	}
+
+	public function hgi_disconnect_user_from_follower() {
+		$action         = esc_attr( filter_input( INPUT_POST, 'action' ) );
+		$user_to_delete = absint( filter_input( INPUT_POST, 'user_id' ) );
+		$nonce          = filter_input( INPUT_POST, 'hgi_disconnect_nonce_field' );
+		if ( 'hgi_disconnect_user' !== $action ) {
+			return;
+		}
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'hgi_disconnect' ) ) {
+			wp_die(
+				__( 'Invalid nonce specified', $this->plugin_name ), __( 'Error', $this->plugin_name ), array(
+					'response' => 403,
+				)
+			);
+		}
+		if ( ! is_user_logged_in() ) {
+			$redirect = add_query_arg(
+				array(
+					'redirect_to' => rawurlencode( home_url( FOLLOWING_URL ) ),
+				), LOGIN_URL
+			);
+			wp_safe_redirect( $redirect );
+			die();
+		} else {
+			$current_follower = get_current_user_id();
+			require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-followers.php';
+			$followers_o = new How_Goes_It_Model_Followers();
+			$result      = $followers_o->hgi_remove_follower( $user_to_delete, $current_follower );
+
+			wp_safe_redirect( home_url( FOLLOWING_URL ) );
+			die();
+		}
+
 	}
 
 

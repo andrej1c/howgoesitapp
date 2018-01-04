@@ -68,7 +68,7 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 						'hgia_email'      => rawurlencode( $email ),
 						'hgia_timezone'   => rawurlencode( $timezone ),
 						'error'           => rawurlencode( $message ),
-					), '/register'
+					), REGISTER_URL
 				);
 				wp_safe_redirect( $redirect );
 				die();
@@ -122,7 +122,7 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 				$redirect = add_query_arg(
 					array(
 						'error' => rawurlencode( 'Something wrong happend, try again later please.' ),
-					), '/register'
+					), REGISTER_URL
 				);
 				wp_safe_redirect( $redirect );
 				exit();
@@ -168,7 +168,7 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 					array(
 						'c' => $code,
 					),
-					'login'
+					LOGIN_URL
 				);
 			} else {
 				$login_url = wp_login_url();

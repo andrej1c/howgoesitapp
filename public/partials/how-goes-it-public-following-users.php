@@ -20,6 +20,7 @@ if ( 0 < count( $users ) ) {
 				<th>
 					Last Updated
 				</th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -33,6 +34,14 @@ if ( 0 < count( $users ) ) {
 				</td>
 				<td>
 					<?php echo esc_attr( $user['user_timestamp'] ); ?>
+				</td>
+				<td>
+					<form name="disconnect_form" class="disconnect_form" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
+						<input type="hidden" name="user_id" value="<?php echo esc_attr( $user['user_id'] ); ?>">
+						<?php echo wp_nonce_field( 'hgi_disconnect', 'hgi_disconnect_nonce_field', true, false ); ?>
+						<input type="hidden" name="action" value="hgi_disconnect_user">
+						<button type="submit" name="submit_disconnect">Disconnect</button>
+					</form>
 				</td>
 			</tr>
 			<?php } ?>

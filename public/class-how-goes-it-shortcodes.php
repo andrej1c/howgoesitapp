@@ -65,7 +65,6 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 			// We need to give a vague reason for the Login error.
 			echo '<p class="login-msg"><strong>ERROR:</strong> Invalid Username and/or Password or your account is not validated.</p>';
 		} elseif ( is_user_logged_in() ) {
-			$login_url = esc_url( home_url( '/login/?login=false' ) );
 			printf(
 				'<p class="login-msg">Already logged in! Maybe try <a href="%s">Logging out</a> and logging in again?</p>', esc_url( wp_logout_url( get_permalink() ) )
 			);

@@ -28,7 +28,7 @@ class How_Goes_It_Public_User_Actions extends How_Goes_It_Public {
 	function cs_redirect_from_wp_login() {
 		if ( strpos( filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL ), 'wp-login.php' ) !== false && 'GET' === filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING ) ) {
 
-			$login_url = home_url( '/login/' );
+			$login_url = home_url( LOGIN_URL );
 
 			wp_safe_redirect( $login_url );
 			exit;
@@ -42,13 +42,13 @@ class How_Goes_It_Public_User_Actions extends How_Goes_It_Public {
 				// We'll need to redirect this to the admin page once the plugin is finished.
 				wp_safe_redirect( home_url( '/wp-admin/' ) );
 			} else {
-				wp_safe_redirect( home_url( '/score/' ) );
+				wp_safe_redirect( home_url( SCORE_URL ) );
 			}
 		}
 	}
 
 	function cs_logout_redirect() {
-		$login_url = home_url( '/login/' );
+		$login_url = home_url( LOGIN_URL );
 
 		wp_safe_redirect( $login_url . '?login=false' );
 
@@ -79,16 +79,16 @@ class How_Goes_It_Public_User_Actions extends How_Goes_It_Public {
 				// Display error if registrations are closed.
 				$redirect_url = add_query_arg( 'error', 'closed', $registration_url );
 			} else {
-				$user_login	 = filter_input( INPUT_POST, 'hgia_user' );
-				$user_email	 = filter_input( INPUT_POST, 'hgia_email' );
+				$user_login = filter_input( INPUT_POST, 'hgia_user' );
+				$user_email = filter_input( INPUT_POST, 'hgia_email' );
 
 				$result = register_new_user( $user_login, $user_email );
 				if ( is_wp_error( $result ) ) {
-					$errors			 = join( ',', $result->get_error_codes() );
-					$redirect_url	 = add_query_arg( 'error', $errors, $registration_url );
+					$errors       = join( ',', $result->get_error_codes() );
+					$redirect_url = add_query_arg( 'error', $errors, $registration_url );
 				} else {
 					// Successful registration, redirect to log in page.
-					wp_safe_redirect( home_url( '/login/' ) );
+					wp_safe_redirect( home_url( LOGIN_URL ) );
 				}
 			}
 
@@ -100,9 +100,9 @@ class How_Goes_It_Public_User_Actions extends How_Goes_It_Public {
 	function cs_redirect_from_wp_register() {
 		if ( 'GET' === filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING ) ) {
 			if ( is_user_logged_in() ) {
-				wp_safe_redirect( home_url( '/score/' ) );
+				wp_safe_redirect( home_url( SCORE_URL ) );
 			} else {
-				wp_safe_redirect( home_url( '/score/' ) );
+				wp_safe_redirect( home_url( SCORE_URL ) );
 			}
 			exit;
 		}
