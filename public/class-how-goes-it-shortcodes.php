@@ -27,10 +27,10 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 	}
 
 	public function init_shortcodes() {
-		add_shortcode( 'leo_score_login', [ $this, 'cs_login_shortcode' ] );
-		add_shortcode( 'leo_score_entry', [ $this, 'cs_score_entry' ] );
-		add_shortcode( 'howgoesit_my_last_score', [ $this, 'howgoesit_my_last_score_func' ] );
-		add_shortcode( 'leoscore_register', [ $this, 'cs_register_shortcode' ] );
+		add_shortcode( 'hgi_login_form', [ $this, 'cs_login_shortcode' ] );
+		add_shortcode( 'hgi_score_form', [ $this, 'cs_score_entry' ] );
+		add_shortcode( 'hgi_my_last_score', [ $this, 'howgoesit_my_last_score_func' ] );
+		add_shortcode( 'hgi_register_form', [ $this, 'cs_register_shortcode' ] );
 		add_shortcode( 'hgi_followers_or_code', [ $this, 'hgi_display_followers_or_invite_code' ] );
 		add_shortcode( 'hgi_users_for_follower', [ $this, 'hgi_users_for_follower_func' ] );
 	}
@@ -60,15 +60,14 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 	function cs_login_shortcode() {
 
 		$login = ( filter_input( INPUT_GET, 'login' ) ) ? filter_input( INPUT_GET, 'login' ) : 0;
-
+		ob_start();
 		if ( 'failed' === $login ) {
 			// We need to give a vague reason for the Login error.
 			echo '<p class="login-msg"><strong>ERROR:</strong> Invalid Username and/or Password or your account is not validated.</p>';
 		} elseif ( is_user_logged_in() ) {
-			printf(
+			return sprintf(
 				'<p class="login-msg">Already logged in! Maybe try <a href="%s">Logging out</a> and logging in again?</p>', esc_url( wp_logout_url( get_permalink() ) )
 			);
-			return;
 		}
 
 		do_action( 'wordpress_social_login' );
@@ -83,12 +82,14 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 		wp_login_form( $args );
 
 		if ( get_option( 'users_can_register' ) ) {
-			$register_url = home_url( '/register/' );
+			$register_url = home_url( REGISTER_URL );
 			if ( ! empty( $code ) ) {
 				$register_url .= '?c=' . $code;
 			}
 			echo '<a href="' . esc_url( $register_url ) . '">Create new Account</a>';
 		}
+		$content = ob_get_clean();
+		return $content;
 	}
 
 	function cs_score_entry() {
