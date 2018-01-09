@@ -92,9 +92,9 @@ class How_Goes_It_Admin_Follower_Actions extends How_Goes_It_Admin {
 	}
 
 	public function hgi_approve_follower() {
-		$action   = filter_input( INPUT_GET, 'action' );
-		$code     = filter_input( INPUT_GET, 'code' );
-		$follower = filter_input( INPUT_GET, 'following_user' );
+		$action   = esc_attr( filter_input( INPUT_GET, 'action' ) );
+		$code     = esc_attr( filter_input( INPUT_GET, 'code' ) );
+		$follower = absint( filter_input( INPUT_GET, 'following_user' ) );
 		if ( 'hgi_add_follower' !== $action ) {
 			wp_die(
 				__( 'Invalid action.', $this->plugin_name ), __( 'Error', $this->plugin_name ), array(
@@ -125,6 +125,22 @@ class How_Goes_It_Admin_Follower_Actions extends How_Goes_It_Admin {
 			require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-followers.php';
 			$followers_o = new How_Goes_It_Model_Followers();
 			$result      = $followers_o->hgi_update_follower( get_current_user_id(), $follower, 'active' );
+			if ( 0 === $result ) {
+				wp_die(
+					__( 'User not found or was already approved.', $this->plugin_name ), __( 'Error', $this->plugin_name ), array(
+						'response' => 403,
+					)
+				);
+			}
+			$c_first_name  = get_user_meta( get_current_user_id(), 'first_name', true );
+			$follower_user = get_userdata( $follower );
+			$email         = $follower_user->user_email;
+
+			$url = home_url( FOLLOWERS_URL );
+
+			$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+			$message = sprintf( 'You can now see %s\'s score on <a href="%s">followers</a> page.', $c_first_name, $url );
+			wp_mail( $email, 'Follow approved', $message, $headers );
 			wp_safe_redirect( home_url( FOLLOWERS_URL ) );
 			die();
 		}
