@@ -242,8 +242,6 @@ class How_Goes_It {
 		$this->loader->add_action( 'login_redirect', $plugin_user_actions, 'redirect_after_login', 10, 3 );
 		$this->loader->add_action( 'wp_logout', $plugin_user_actions, 'cs_logout_redirect' );
 		$this->loader->add_action( 'init', $plugin_user_actions, 'cs_disable_admin_bar' );
-		$this->loader->add_action( 'login_form_register', $plugin_user_actions, 'cs_do_register_user', 10, 0 );
-		$this->loader->add_action( 'login_form_register', $plugin_user_actions, 'cs_redirect_from_wp_register', 10, 0 );
 
 		$this->loader->add_filter( 'authenticate', $plugin_user_actions, 'cs_maybe_redirect_at_authentication', 101, 3 );
 	}

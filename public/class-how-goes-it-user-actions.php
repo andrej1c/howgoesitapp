@@ -60,7 +60,7 @@ class How_Goes_It_Public_User_Actions extends How_Goes_It_Public {
 	}
 
 	function cs_maybe_redirect_at_authentication( $user, $username, $password ) {
-		$login_url = home_url( '/login/' );
+		$login_url = home_url( LOGIN_URL );
 
 		if ( 'POST' === filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING ) ) {
 			if ( is_wp_error( $user ) ) {
@@ -68,44 +68,6 @@ class How_Goes_It_Public_User_Actions extends How_Goes_It_Public {
 			}
 		}
 		return $user;
-	}
-
-	function cs_do_register_user() {
-		if ( 'POST' === filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING ) ) {
-			$registration_url = home_url( '/register/' );
-
-			// Check to see if we allow new users to be registered.
-			if ( ! get_option( 'users_can_register' ) ) {
-				// Display error if registrations are closed.
-				$redirect_url = add_query_arg( 'error', 'closed', $registration_url );
-			} else {
-				$user_login = filter_input( INPUT_POST, 'hgia_user' );
-				$user_email = filter_input( INPUT_POST, 'hgia_email' );
-
-				$result = register_new_user( $user_login, $user_email );
-				if ( is_wp_error( $result ) ) {
-					$errors       = join( ',', $result->get_error_codes() );
-					$redirect_url = add_query_arg( 'error', $errors, $registration_url );
-				} else {
-					// Successful registration, redirect to log in page.
-					wp_safe_redirect( home_url( LOGIN_URL ) );
-				}
-			}
-
-			wp_safe_redirect( $redirect_url );
-			exit;
-		}
-	}
-
-	function cs_redirect_from_wp_register() {
-		if ( 'GET' === filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING ) ) {
-			if ( is_user_logged_in() ) {
-				wp_safe_redirect( home_url( SCORE_URL ) );
-			} else {
-				wp_safe_redirect( home_url( SCORE_URL ) );
-			}
-			exit;
-		}
 	}
 
 }

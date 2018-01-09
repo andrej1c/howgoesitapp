@@ -185,10 +185,17 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 	 * @return $user or thorws WP Error.
 	 */
 	public function hgi_validate_user_on_login( $user ) {
+		if ( in_array( 'administrator', $user->roles, true ) ) {
+			return $user;
+		}
 		if ( get_user_meta( $user->ID, 'hgi_user_flag', true ) === 'active' ) {
 			return $user;
 		}
-		return new WP_Error( 'Account Not Active. Please click on the link in your email. If you can\'t find it, look into spam folder, otherwise contact support.' );
+		$login_url = home_url( LOGIN_URL );
+
+		wp_safe_redirect( $login_url . '?login=failed' );
+
+		exit;
 	}
 
 }

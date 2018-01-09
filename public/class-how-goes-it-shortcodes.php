@@ -104,6 +104,11 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 	}
 
 	function cs_register_shortcode() {
+		if ( is_user_logged_in() ) {
+			return sprintf(
+				'<p class="login-msg">Already logged in! Maybe try <a href="%s">Logging out</a> and logging in again?</p>', esc_url( wp_logout_url( get_permalink() ) )
+			);
+		}
 		if ( ! get_option( 'users_can_register' ) ) {
 			return __( 'Registration is currently closed.', $this->plugin_name );
 		} else {
