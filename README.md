@@ -1,6 +1,6 @@
 # How Goes It? App.
 ## Requirements
-* Create pages with urls: **"login", "register", "following", "followers", "score"**. Must have these slugs. Can be changed in includes/class-how-goes-it.php in define_urls() function.
+* Create pages with urls: **"my-account", "register", "following", "followers", "score"**. Must have these slugs. Can be changed in includes/class-how-goes-it.php in define_urls() function.
 
 ## Shortcodes
 There is currently 6 shortcodes:
