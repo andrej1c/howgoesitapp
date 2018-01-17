@@ -105,7 +105,7 @@ class How_Goes_It_Admin_Score_Actions extends How_Goes_It_Admin {
 		foreach ( $followers_a as $follower ) {
 			$body = sprintf(
 				'Hi %1$s,'
-				. '<p>%2$s just changed his score to %3$d and because scores 1-3 on our scale are the "need help" scores we are sending you a notification.</p>'
+				. '<p>%2$s just changed their score to %3$d and because scores 1-3 on our scale are the "need help" scores we are sending you a notification.</p>'
 				. '<p>If you and %2$s have arranged for what %2$s finds most helpful in these situation, now would be the time to do that.</p>'
 				. '<p>If you feel uncertain how to help %2$s, take a quick glance at our <a href="#">Resource section</a> under <a href="#">How to help someone that\'s hurting</a>.</p>',
 				$follower['follower_first_name'], $first_name, $score
