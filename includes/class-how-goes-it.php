@@ -172,7 +172,7 @@ class How_Goes_It {
 
 	private function define_urls() {
 		define( 'FOLLOWERS_URL', 'followers' );
-		define( 'LOGIN_URL', 'login' );
+		define( 'LOGIN_URL', 'my-account' );
 		define( 'FOLLOWING_URL', 'following' );
 		define( 'REGISTER_URL', 'register' );
 		define( 'SCORE_URL', 'score' );
@@ -238,12 +238,14 @@ class How_Goes_It {
 
 		$plugin_user_actions = new How_Goes_It_Public_User_Actions( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'login_redirect', $plugin_user_actions, 'cs_redirect_from_wp_login' );
+		$this->loader->add_action( 'login_redirect', $plugin_user_actions, 'cs_redirect_from_wp_login', 10, 3 );
 		$this->loader->add_action( 'login_redirect', $plugin_user_actions, 'redirect_after_login', 10, 3 );
 		$this->loader->add_action( 'wp_logout', $plugin_user_actions, 'cs_logout_redirect' );
 		$this->loader->add_action( 'init', $plugin_user_actions, 'cs_disable_admin_bar' );
 
 		$this->loader->add_filter( 'authenticate', $plugin_user_actions, 'cs_maybe_redirect_at_authentication', 101, 3 );
+		$this->loader->add_action( 'admin_post_hgi_update_user', $plugin_user_actions, 'hgi_update_user', 10, 3 );
+		$this->loader->add_action( 'template_redirect', $plugin_user_actions, 'hgi_template_redirect' );
 	}
 
 	/**

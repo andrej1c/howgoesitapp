@@ -37,8 +37,7 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 		if ( ! filter_input( INPUT_POST, 'hgi_nonce_field' ) || ! wp_verify_nonce( filter_input( INPUT_POST, 'hgi_nonce_field' ), 'hgi_registration' ) ) {
 			wp_die(
 				__( 'Invalid nonce specified', $this->plugin_name ), __( 'Error', $this->plugin_name ), array(
-					'response'  => 403,
-					'back_link' => get_site_url( '/register' ),
+					'response' => 403,
 				)
 			);
 		} else {
@@ -68,6 +67,7 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 						'hgia_email'      => rawurlencode( $email ),
 						'hgia_timezone'   => rawurlencode( $timezone ),
 						'error'           => rawurlencode( $message ),
+						'c'               => rawurlencode( $follower_code ),
 					), REGISTER_URL
 				);
 				wp_safe_redirect( $redirect );
@@ -122,6 +122,7 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 				$redirect = add_query_arg(
 					array(
 						'error' => rawurlencode( 'Something wrong happend, try again later please.' ),
+						'c'     => $follower_code,
 					), REGISTER_URL
 				);
 				wp_safe_redirect( $redirect );

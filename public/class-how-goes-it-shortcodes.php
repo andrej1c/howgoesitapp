@@ -38,9 +38,6 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 	public function howgoesit_my_last_score_func( $atts ) {
 		require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-last-score.php';
 
-		if ( ! is_user_logged_in() ) {
-			return 'Please login first.';
-		}
 		$current_user = get_current_user_id();
 
 		$last_score = new How_Goes_It_Model_Last_Score();
@@ -59,15 +56,30 @@ class How_Goes_It_Public_Shortcodes extends How_Goes_It_Public {
 
 	function cs_login_shortcode() {
 
+		if ( is_user_logged_in() ) {
+			$output = sprintf(
+				'<p>You can logout by clicking on this link: <a href="%s">Log out</a></p>', esc_url( wp_logout_url( get_permalink() ) )
+			);
+			$tzlist = DateTimeZone::listIdentifiers( DateTimeZone::ALL );
+			$tz_a   = [];
+			foreach ( $tzlist as $tz ) {
+				$tz_name     = str_replace( '/', ' - ', $tz );
+				$tz_name     = str_replace( '_', ' ', $tz_name );
+				$tz_a[ $tz ] = $tz_name;
+			}
+			$timezone = get_user_meta( get_current_user_id(), 'hgi_user_timezone', true );
+
+			ob_start();
+			include_once plugin_dir_path( __FILE__ ) . 'partials/how-goes-it-public-my-account-form.php';
+			$output .= ob_get_clean();
+
+			return $output;
+		}
 		$login = ( filter_input( INPUT_GET, 'login' ) ) ? filter_input( INPUT_GET, 'login' ) : 0;
 		ob_start();
 		if ( 'failed' === $login ) {
 			// We need to give a vague reason for the Login error.
 			echo '<p class="login-msg"><strong>ERROR:</strong> Invalid Username and/or Password or your account is not validated.</p>';
-		} elseif ( is_user_logged_in() ) {
-			return sprintf(
-				'<p class="login-msg">Already logged in! Maybe try <a href="%s">Logging out</a> and logging in again?</p>', esc_url( wp_logout_url( get_permalink() ) )
-			);
 		}
 
 		do_action( 'wordpress_social_login' );
