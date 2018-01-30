@@ -192,9 +192,15 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 		if ( get_user_meta( $user->ID, 'hgi_user_flag', true ) === 'active' ) {
 			return $user;
 		}
-		$login_url = home_url( LOGIN_URL );
-
-		wp_safe_redirect( $login_url . '?login=failed' );
+		$login_url   = home_url( LOGIN_URL );
+		$redirect_to = filter_input( INPUT_POST, 'redirect_to' );
+		$redirect    = add_query_arg(
+			array(
+				'login'       => 'failed',
+				'redirect_to' => rawurlencode( $redirect_to ),
+			), $login_url
+		);
+		wp_safe_redirect( $redirect );
 
 		exit;
 	}

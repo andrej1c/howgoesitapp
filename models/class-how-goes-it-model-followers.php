@@ -55,19 +55,28 @@ class How_Goes_It_Model_Followers {
 	 */
 	public function hgi_store_follower( $user_id, $follower_id, $status ) {
 		global $wpdb;
-		$result = $wpdb->insert(
-			$wpdb->prefix . $this->table_name,
-			array(
-				'hgi_user_id'          => $user_id,
-				'hgi_follower_user_id' => $follower_id,
-				'hgi_status'           => $status,
-			),
-			array(
-				'%d',
-				'%d',
-				'%s',
-			)
-		);
+		$result              = false;
+		$table_name          = $wpdb->prefix . $this->table_name;
+		$existing_connection = $wpdb->get_results( $wpdb->prepare( "SELECT hgi_user_id, hgi_follower_user_id FROM $table_name WHERE hgi_user_id = %d AND hgi_follower_user_id = %d", $user_id, $follower_id ) );
+		if ( 0 === count( $existing_connection ) ) {
+			$result = $wpdb->insert(
+				$table_name,
+				array(
+					'hgi_user_id'          => $user_id,
+					'hgi_follower_user_id' => $follower_id,
+					'hgi_status'           => $status,
+				),
+				array(
+					'%d',
+					'%d',
+					'%s',
+				)
+			);
+
+		} else {
+			return false;
+		}
+
 		return $result;
 	}
 

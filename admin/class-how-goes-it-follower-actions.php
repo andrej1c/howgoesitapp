@@ -52,8 +52,14 @@ class How_Goes_It_Admin_Follower_Actions extends How_Goes_It_Admin {
 				// If all good, notify the user who sent the link to approve and redirect to Home?.
 				require_once plugin_dir_path( plugin_dir_path( __FILE__ ) ) . 'models/class-how-goes-it-model-followers.php';
 				$followers_o = new How_Goes_It_Model_Followers();
-				$followers_o->hgi_store_follower( $request_user_id, get_current_user_id(), 'nonactive' );
-
+				$result      = $followers_o->hgi_store_follower( $request_user_id, get_current_user_id(), 'nonactive' );
+				if ( ! $result ) {
+					wp_die(
+						__( 'Code was already used, wait for your friend to approve this connection or let him know that he should have an email.', $this->plugin_name ), __( 'Error', $this->plugin_name ), array(
+							'response' => 403,
+						)
+					);
+				}
 				$request_user = get_userdata( $request_user_id );
 				$email        = $request_user->user_email;
 
