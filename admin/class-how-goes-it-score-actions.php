@@ -103,6 +103,9 @@ class How_Goes_It_Admin_Score_Actions extends How_Goes_It_Admin {
 		$followers_a = $followers_o->hgi_get_followers_of_user( $current_user );
 		// TODO: store these messages into table and send them by cron?
 		foreach ( $followers_a as $follower ) {
+			if ( 'nonactive' === $follower['follower_status'] ) {
+				continue;
+			}
 			$body = sprintf(
 				'Hi %1$s,'
 				. '<p>%2$s just changed their score to %3$d and because scores 1-3 on our scale are the "need help" scores we are sending you a notification.</p>'
