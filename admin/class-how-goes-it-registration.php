@@ -48,6 +48,7 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 			$password      = esc_attr( filter_input( INPUT_POST, 'hgia_password' ) );
 			$timezone      = esc_attr( filter_input( INPUT_POST, 'hgia_timezone' ) );
 			$follower_code = esc_attr( filter_input( INPUT_POST, 'follower_code' ) );
+			$tos_agree     = esc_attr( filter_input( INPUT_POST, 'tos_agree' ) );
 			$email_invalid = true;
 			if ( is_email( $email ) ) {
 				$email_invalid = false;
@@ -58,6 +59,9 @@ class How_Goes_It_Admin_Registration extends How_Goes_It_Admin {
 			$user_exists = get_user_by( 'email', $email );
 			if ( false !== $user_exists ) {
 				$message = __( 'This user already exists.', $this->plugin_name );
+			}
+			if ( empty( $tos_agree ) ) {
+				$message = __( 'You must agree with terms.', $this->plugin_name );
 			}
 			if ( ! empty( $message ) ) {
 				$redirect = add_query_arg(

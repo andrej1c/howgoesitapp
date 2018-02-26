@@ -28,6 +28,9 @@
 		?>
 		</select>
 	</p>
+	<p>
+		<?php echo do_shortcode( '[signup-tos checkbox="1"]' ); ?>
+	</p>
 
 	<input type="submit" name="submit" value="Create Account" />
 </form>
